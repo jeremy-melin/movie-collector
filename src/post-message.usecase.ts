@@ -24,7 +24,7 @@ export class PostMessageUseCase {
         private readonly dateProvider: DateProvider
     ) {}
 
-    handle(postMessageCommand: PostMessageCommand) {
+    async handle(postMessageCommand: PostMessageCommand) {
 
         if (postMessageCommand.text.length > 280) {
             throw new MessageTooLongError();
