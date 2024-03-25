@@ -1,7 +1,7 @@
 import { Message } from "../message";
 import { InMemoryMessageRepository } from "../message.inmemory.repository";
 import { StubDateProvider } from "../stub-date-provider";
-import { ViewTimeimelineUseCase } from "../view-timeline.usecase";
+import { ViewTimelineUseCase } from "../view-timeline.usecase";
 
 describe('Feature: view a message timeline', () => {
     let fixture: Fixture;
@@ -75,7 +75,7 @@ const createFixture = () => {
 
     const messageRepository = new InMemoryMessageRepository();
     const dateProvider = new StubDateProvider();
-    const viewTimelineUseCase = new ViewTimeimelineUseCase(messageRepository, dateProvider);
+    const viewTimelineUseCase = new ViewTimelineUseCase(messageRepository, dateProvider);
 
     let expectedTimeline: Timeline = [];
     let thrownError: Error;
@@ -89,7 +89,7 @@ const createFixture = () => {
         },
         async whenUserSeesTimelineOf(author: string) {
             try {
-                expectedTimeline = await viewTimelineUseCase.handle({author});
+                expectedTimeline = await viewTimelineUseCase.handle(author);
             } catch (error) {
                 thrownError = error;
             }

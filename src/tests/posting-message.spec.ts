@@ -1,6 +1,6 @@
 import { Message } from "../message";
 import { InMemoryMessageRepository } from "../message.inmemory.repository";
-import { DateProvider, EmptyMessageError, MessageTooLongError, PostMessageCommand, PostMessageUseCase } from "../post-message.usecase";
+import { EmptyMessageError, MessageTooLongError, PostMessageCommand, PostMessageUseCase } from "../post-message.usecase";
 import { StubDateProvider } from "../stub-date-provider";
 
 describe("Feature: Posting a message", () => {

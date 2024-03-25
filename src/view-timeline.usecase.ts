@@ -3,21 +3,20 @@ import { DateProvider } from "./post-message.usecase";
 
 const ONE_MINUTE_IN_MS = 60000;
 
-export class ViewTimeimelineUseCase {
+export class ViewTimelineUseCase {
 
     constructor(
         private readonly messageRepository: MessageRepository,
         private readonly dateProvider: DateProvider
         ) {}
 
-    async handle({ author }: {author: string}): Promise<
+    async handle(author: string): Promise<
         {
             text: string,
             author: string,
             publicationTime: string
         }[]
     > {
-
         const messages = await this.messageRepository.getAllMessagesFromAuthor(author);
         messages.sort((first, second) => second.publishedAt.getTime() - first.publishedAt.getTime());
 

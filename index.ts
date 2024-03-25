@@ -3,6 +3,7 @@
 import { Command } from "commander";
 import { DateProvider, PostMessageCommand, PostMessageUseCase } from "./src/post-message.usecase";
 import { FileSystemMessageRepository } from "./src/message.fs.repository";
+import { ViewTimelineUseCase } from "./src/view-timeline.usecase";
 
 class RealDateProvider implements DateProvider {
     getNow(): Date {
@@ -17,6 +18,8 @@ const postMessageUseCase = new PostMessageUseCase(
     messageRepository,
     dateProvider
 );
+
+const viewTimelineUseCase = new ViewTimelineUseCase(messageRepository, dateProvider);
 
 const program = new Command();
 program
@@ -40,6 +43,18 @@ program.command('message')
             console.log("message posted");
         } catch(error) {
             console.error('post command error', error);
+        }
+    });
+
+program.command('view')
+    .description('view timeline command')
+    .argument('<user>', 'the message author')
+    .action(async (user) => {
+        try {
+            const timeline = await viewTimelineUseCase.handle(user);
+            console.table(timeline);
+        } catch(error) {
+            console.error('view command error', error);
         }
     });
 
