@@ -1,3 +1,4 @@
+import { MessageText } from "./message";
 import { MessageRepository } from "./message.repository";
 import { DateProvider } from "./post-message.usecase";
 
@@ -22,7 +23,7 @@ export class ViewTimelineUseCase {
 
         return messages.map(msg =>
             ({
-                text: msg.text,
+                text: msg.text.value,
                 author: msg.author,
                 publicationTime: this.publicationTime(msg.publishedAt)
             })
