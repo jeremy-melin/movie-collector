@@ -1,42 +1,41 @@
-import { Message } from "../message";
-import { InMemoryMessageRepository } from "../message.inmemory.repository";
-import { StubDateProvider } from "../stub-date-provider";
-import { ViewTimelineUseCase } from "../view-timeline.usecase";
+import { messageBuilder } from "./message.builder";
+import { MessagingFixture, createMessagingFixture } from "./messaging.fixture";
+
 
 describe('Feature: view a message timeline', () => {
-    let fixture: Fixture;
+    let fixture: MessagingFixture;
 
     beforeEach(async () => {
-        fixture = createFixture();
+        fixture = createMessagingFixture();
     });
-    
+
     describe('Rule: messages are shown in reverse chronological order', () => {
         test("alice can see her 3 messages in correct order", async () => {
+
+            const aliceMessageBuilder = messageBuilder().authoredBy("Alice");
+
             fixture.givenTheFollowingMessagesExists([
-                {
-                    id: "message-1",
-                    text: "Hello world !",
-                    author: "Alice",
-                    publishedAt: new Date("2023-01-19T19:00:00.000Z")
-                },
-                {
-                    id: "message-2",
-                    text: "this is my hole it was made for me",
-                    author: "the Rabbit",
-                    publishedAt: new Date("2023-01-19T20:00:00.000Z")
-                },
-                {
-                    id: "message-3",
-                    text: "uuuh okay",
-                    author: "Alice",
-                    publishedAt: new Date("2023-01-19T21:00:00.000Z")
-                },
-                {
-                    id: "message-4",
-                    text: "last message",
-                    author: "Alice",
-                    publishedAt: new Date("2023-01-19T21:00:30.000Z")
-                }
+                aliceMessageBuilder
+                    .withText("Hello world !")
+                    .withId("message-1")
+                    .publishedAt(new Date("2023-01-19T19:00:00.000Z"))
+                    .build(),
+                messageBuilder()
+                    .authoredBy("The Rabbit")
+                    .withText("this is my hole it was made for me")
+                    .withId("message-2")
+                    .publishedAt(new Date("2023-01-19T20:00:00.000Z"))
+                    .build(),
+                aliceMessageBuilder
+                    .withText("uuuh okay")
+                    .withId("message-3")
+                    .publishedAt(new Date("2023-01-19T21:00:00.000Z"))
+                    .build(),
+                aliceMessageBuilder
+                    .withText("last message")
+                    .withId("message-4")
+                    .publishedAt(new Date("2023-01-19T21:00:30.000Z"))
+                    .build()
             ]);
 
             fixture.givenNowIs(new Date("2023-01-19T21:01:00.000Z"));
@@ -63,42 +62,3 @@ describe('Feature: view a message timeline', () => {
         });
     });
 });
-
-type Timeline = {
-    text: string,
-    author: string,
-    publicationTime: string
-}[];
-
-
-const createFixture = () => {
-
-    const messageRepository = new InMemoryMessageRepository();
-    const dateProvider = new StubDateProvider();
-    const viewTimelineUseCase = new ViewTimelineUseCase(messageRepository, dateProvider);
-
-    let expectedTimeline: Timeline = [];
-    let thrownError: Error;
-
-    return {
-        givenTheFollowingMessagesExists(messages: Message[]) {
-            messageRepository.givenExistingMessages(messages);
-        },
-        givenNowIs(now: Date) {
-            dateProvider.now = now;
-        },
-        async whenUserSeesTimelineOf(author: string) {
-            try {
-                expectedTimeline = await viewTimelineUseCase.handle(author);
-            } catch (error) {
-                thrownError = error;
-            }
-        },
-        thenUserShouldSee(timeline: Timeline) {
-            expect(timeline).toEqual(expectedTimeline);
-        }
-    }
-
-};
-
-type Fixture = ReturnType<typeof createFixture>;
