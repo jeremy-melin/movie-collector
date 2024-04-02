@@ -9,8 +9,12 @@ export class InMemoryMessageRepository implements MessageRepository {
         return Promise.resolve();
     }
 
+    getbyId(messageId: string): Promise<Message> {
+        return Promise.resolve(this.getMessageById(messageId));
+    }
+
     getMessageById(id: string) {
-        return this.messages.get(id);
+        return this.messages.get(id)!;
     }
 
     givenExistingMessages(messages: Message[]) {
