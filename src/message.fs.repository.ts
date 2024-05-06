@@ -1,18 +1,13 @@
-import *  as path from 'path';
+import * as path from 'path';
 import * as fs from 'fs';
-import { Message } from './message';
+import { Message, MessageText } from './message';
 import { MessageRepository } from './message.repository';
 
 export class FileSystemMessageRepository implements MessageRepository {
 
-    private readonly messagePath = path.join(__dirname, 'message.json');
-
-    async getAllMessagesFromAuthor(author: string): Promise<Message[]> {
-        const messages = await this.getMessages();
-        return messages.filter((msg) => 
-            msg.author.toLowerCase() === author.toLowerCase()
-        );
-    }
+    constructor(
+        private readonly messagePath = path.join(__dirname, 'message.json')
+    ) {}
 
     async save(message: Message): Promise<void> {
         const messages = await this.getMessages();
@@ -26,7 +21,12 @@ export class FileSystemMessageRepository implements MessageRepository {
 
         return fs.promises.writeFile(
             this.messagePath,
-            JSON.stringify(messages)
+            JSON.stringify(messages.map(m => ({
+                id: m.id,
+                author: m.author,
+                publishedAt: m.publishedAt,
+                text: m.text.value
+            })))
         );
     }
 
@@ -34,6 +34,13 @@ export class FileSystemMessageRepository implements MessageRepository {
         const messages = await this.getMessages();
 
         return messages.find(msg => msg.id === messageId)!;
+    }
+
+    async getAllMessagesFromAuthor(author: string): Promise<Message[]> {
+        const messages = await this.getMessages();
+        return messages.filter((msg) => 
+            msg.author.toLowerCase() === author.toLowerCase()
+        );
     }
 
     private async getMessages(): Promise<Message[]> {
@@ -47,7 +54,7 @@ export class FileSystemMessageRepository implements MessageRepository {
 
         return messages.map(msg => ({
             id: msg.id,
-            text: msg.text,
+            text: MessageText.of(msg.text),
             author: msg.author,
             publishedAt: new Date(msg.publishedAt)
         }));
