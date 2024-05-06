@@ -1,4 +1,4 @@
-import { MessageText } from "./message";
+import { Message, MessageText } from "./message";
 import { MessageRepository } from "./message.repository";
 
 export type EditMessageCommand = {
@@ -11,13 +11,10 @@ export class EditMessageUseCase {
     constructor(private readonly messageRepository: MessageRepository) {}
 
     async handle(editMessageCommand: EditMessageCommand) {
-
         const message = await this.messageRepository.getbyId(editMessageCommand.id);
-        const editedMessage = {
-            ...message,
-            text: MessageText.of(editMessageCommand.text)
-        };
 
-        await this.messageRepository.save(editedMessage);
+        message.editText(editMessageCommand.text);
+        
+        await this.messageRepository.save(message);
     }
 }

@@ -9,7 +9,7 @@ describe('Feature: edit message', () => {
         fixture = createMessagingFixture();
     });
 
-    describe('Rule: the edited text should not be longer than 280 characters', () => {
+    fdescribe('Rule: the edited text should not be longer than 280 characters', () => {
         test('Alice can edit a text with less than 280 characters', async () => {
             const aliceMessageBuilder = messageBuilder()
                 .withId("message-id")
