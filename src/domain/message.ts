@@ -1,8 +1,6 @@
 export class MessageTooLongError extends Error {}
 export class EmptyMessageError extends Error {}
 
-// export type Message = {id: string, text: MessageText, author: string, publishedAt: Date};
-
 export class Message {
     constructor(
         private readonly _id: string,
