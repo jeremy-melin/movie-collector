@@ -62,7 +62,8 @@ export const createMessagingFixture = () => {
         },
         thenUserShouldSee(timeline: Timeline) {
             expect(timeline).toEqual(expectedTimeline);
-        }
+        },
+        messageRepository
     }
 }
 

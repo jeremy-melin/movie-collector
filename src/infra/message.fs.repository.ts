@@ -34,7 +34,7 @@ export class FileSystemMessageRepository implements MessageRepository {
     async getAllMessagesFromAuthor(author: string): Promise<Message[]> {
         const messages = await this.getMessages();
         return messages.filter((msg) => 
-            msg.author.toLowerCase() === author.toLowerCase()
+            msg.author === author
         );
     }
 

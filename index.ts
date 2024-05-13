@@ -6,9 +6,13 @@ import { PostMessageUseCase, PostMessageCommand } from "./src/application/usecas
 import { ViewTimelineUseCase } from "./src/application/usecases/view-timeline.usecase";
 import { FileSystemMessageRepository } from "./src/infra/message.fs.repository";
 import { RealDateProvider } from "./src/infra/real-date-provider";
+import { FollowUserCommand, FollowUserUseCase } from "./src/application/usecases/follow-user.usecase";
+import { FileSystemFolloweeRepository } from "./src/infra/followee.fs.repository";
+import { ViewWallUseCase } from "./src/application/usecases/view-wall.usecase";
 
 
 const messageRepository = new FileSystemMessageRepository();
+const followeeRepository = new FileSystemFolloweeRepository();
 const dateProvider = new RealDateProvider();
 
 const postMessageUseCase = new PostMessageUseCase(
@@ -21,6 +25,9 @@ const editMessageUseCase = new EditMessageUseCase(
 );
 
 const viewTimelineUseCase = new ViewTimelineUseCase(messageRepository, dateProvider);
+const viewWallUseCase = new ViewWallUseCase(messageRepository, followeeRepository, dateProvider);
+
+const followUserUseCase = new FollowUserUseCase(followeeRepository);
 
 const program = new Command();
 program
@@ -44,6 +51,24 @@ program.command('message')
             console.log("message posted");
         } catch(error) {
             console.error('post command error', error);
+        }
+    });
+
+program.command('follow')
+    .description('follow command')
+    .argument('<user>', 'the follower')
+    .argument('<user-to-follow>', 'the user to follow')
+    .action(async (user, userToFollow) => {
+        const followUserCommand: FollowUserCommand = {
+            user: user,
+            userToFollow: userToFollow
+        }
+
+        try {
+            await followUserUseCase.handle(followUserCommand);
+            console.log("user followed");
+        } catch(error) {
+            console.error('follow command error', error);
         }
     });
 
@@ -71,6 +96,17 @@ program.command('view')
     .action(async (user) => {
         try {
             const timeline = await viewTimelineUseCase.handle(user);
+            console.table(timeline);
+        } catch(error) {
+            console.error('view command error', error);
+        }
+    });
+
+program.command('wall')
+    .argument('<user>', 'the user to view the wall of')
+    .action(async (user) => {
+        try {
+            const timeline = await viewWallUseCase.handle(user);
             console.table(timeline);
         } catch(error) {
             console.error('view command error', error);
